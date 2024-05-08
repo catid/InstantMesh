@@ -34,5 +34,8 @@ Navigate to `http://localhost:43839` to use the demo.
 To run a curl API:
 
 ```bash
-docker run -it -p 8112:8112 --platform=linux/amd64 -e AUTH_TOKEN=your_auth_token -e PORT=8112 -e GRADIO_URL=http://localhost:43839 instantmesh_curl
+mkdir -p $HOME/models/
+export MODEL_DIR=$HOME/models/
+
+docker run -it -p 8112:8112 --platform=linux/amd64 --gpus '"device=0,1"' -v $MODEL_DIR:/workspace/instantmesh/models -e AUTH_TOKEN=your_auth_token -e PORT=8112 instantmesh_curl
 ```

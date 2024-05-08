@@ -54,4 +54,4 @@ RUN pip install -r requirements.txt
 COPY . /workspace/instantmesh
 
 # Run the command when the container starts
-CMD python app.py --export_texmap
+CMD python app.py
