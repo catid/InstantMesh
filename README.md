@@ -17,8 +17,10 @@ This repo is the official implementation of InstantMesh, a feed-forward framewor
 
 https://github.com/TencentARC/InstantMesh/assets/20635237/dab3511e-e7c6-4c0b-bab7-15772045c47d
 
-# 🚩 Todo List
-
+# 🚩 Features and Todo List
+- [x] 🔥🔥 Release Zero123++ fine-tuning code. 
+- [x] 🔥🔥 Support for running gradio demo on two GPUs to save memory.
+- [x] 🔥🔥 Support for running demo with docker. Please refer to the [docker](docker/) directory.
 - [x] Release inference and training code.
 - [x] Release model weights.
 - [x] Release huggingface gradio demo. Please try it at [demo](https://huggingface.co/spaces/TencentARC/InstantMesh) link.
@@ -69,8 +71,15 @@ By default, we use the `instant-mesh-large` reconstruction model variant.
 
 To start a gradio demo in your local machine, simply run:
 ```bash
+python app.py
+```
+
+If you have multiple GPUs in your machine, the demo app will run on two GPUs automatically to save memory. You can also force it to run on a single GPU:
+```bash
 CUDA_VISIBLE_DEVICES=0 python app.py
 ```
+
+Alternatively, you can run the demo with docker. Please follow the instructions in the [docker](docker/) directory.
 
 ## Running with command line
 
@@ -106,6 +115,11 @@ python train.py --base configs/instant-nerf-large-train.yaml --gpus 0,1,2,3,4,5,
 
 # Training on Mesh representation
 python train.py --base configs/instant-mesh-large-train.yaml --gpus 0,1,2,3,4,5,6,7 --num_nodes 1
+```
+
+We also provide our Zero123++ fine-tuning code since it is frequently requested. The running command is:
+```bash
+python train.py --base configs/zero123plus-finetune.yaml --gpus 0,1,2,3,4,5,6,7 --num_nodes 1
 ```
 
 # CURL API

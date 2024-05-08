@@ -65,11 +65,11 @@ class RequestHandler(BaseHTTPRequestHandler):
         logging.info("Creating zip file...")
         zip_buffer = io.BytesIO()
         with zipfile.ZipFile(zip_buffer, "w") as zip_file:
-            zip_file.writestr("background_removed.png", background_removed_image)
-            zip_file.writestr("generated_views.png", generated_views)
-            zip_file.writestr("video.mp4", video)
-            zip_file.writestr("model.obj", obj)
-            zip_file.writestr("model.glb", glb)
+            with open(video, "rb") as video_file:
+                zip_file.writestr("video.mp4", video_file.read())
+
+            with open(glb, "rb") as glb_file:
+                zip_file.writestr("model.glb", glb_file.read())
 
         logging.info(f"Sending response to {client_address}")
         self.send_response(200)
