@@ -23,6 +23,9 @@ docker run -it -p 43839:43839 --platform=linux/amd64 --gpus all -v $MODEL_DIR:/w
 To use specific GPUs:
 
 ```bash
+mkdir -p $HOME/models/
+export MODEL_DIR=$HOME/models/
+
 docker run -it -p 43839:43839 --platform=linux/amd64 --gpus '"device=0,1"' -v $MODEL_DIR:/workspace/instantmesh/models instantmesh
 ```
 
