@@ -8,6 +8,7 @@ Build docker image:
 
 ```bash
 docker build -t instantmesh -f docker/Dockerfile .
+docker build -t instantmesh_curl -f docker/DockerfileCurl .
 ```
 
 Run docker image with a local model cache (so it is fast when container is started next time):
@@ -26,3 +27,9 @@ docker run -it -p 43839:43839 --platform=linux/amd64 --gpus '"device=0,1"' -v $M
 ```
 
 Navigate to `http://localhost:43839` to use the demo.
+
+To run a curl API:
+
+```bash
+docker run -it -p 8112:8112 --platform=linux/amd64 -e AUTH_TOKEN=your_auth_token -e PORT=8112 -e GRADIO_URL=http://localhost:43839 instantmesh_curl
+```

@@ -113,7 +113,7 @@ python train.py --base configs/instant-mesh-large-train.yaml --gpus 0,1,2,3,4,5,
 We provide a CURL API to generate meshes from an image.
 
 ```bash
-python curl_frontend.py --auth-token YOUR_AUTH_TOKEN --port 8112
+python curl_frontend.py --auth-token YOUR_AUTH_TOKEN --port 8112 --gradio-url http://localhost:43839
 
 curl -X POST -F "image=@examples/hatsune_miku.png" -H "Authorization: YOUR_AUTH_TOKEN" http://localhost:8112 --output results.zip
 ```

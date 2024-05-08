@@ -34,7 +34,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             temp_file.write(image_file.read())
             temp_file_path = temp_file.name
 
-        client = Client("http://gpu2.lan:43839")
+        client = Client(args.gradio_url)
 
         logging.info(f"Processing request from {client_address}")
 
@@ -86,6 +86,7 @@ if __name__ == "__main__":
     parser = argparse.ArgumentParser(description="HTTP server with authentication")
     parser.add_argument("--auth-token", required=True, help="Authentication token")
     parser.add_argument("--port", type=int, default=8112, help="Port number (default: 8112)")
+    parser.add_argument("--gradio-url", type=str, default="http://localhost:43839", help="URL to access")
     args = parser.parse_args()
 
     server_address = ("", args.port)
