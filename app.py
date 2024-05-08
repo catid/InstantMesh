@@ -32,7 +32,7 @@ else:
     device1 = device0
 
 # Define the cache directory for model files
-model_cache_dir = './ckpts/'
+model_cache_dir = './models/'
 os.makedirs(model_cache_dir, exist_ok=True)
 
 def get_render_cameras(batch_size=1, M=120, radius=2.5, elevation=10.0, is_flexicubes=False):

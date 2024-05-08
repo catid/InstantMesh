@@ -63,7 +63,7 @@ pip install -r requirements.txt
 
 We provide 4 sparse-view reconstruction model variants and a customized Zero123++ UNet for white-background image generation in the [model card](https://huggingface.co/TencentARC/InstantMesh).
 
-Our inference script will download the models automatically. Alternatively, you can manually download the models and put them under the `ckpts/` directory.
+Our inference script will download the models automatically. Alternatively, you can manually download the models and put them under the `models/` directory.
 
 By default, we use the `instant-mesh-large` reconstruction model variant.
 

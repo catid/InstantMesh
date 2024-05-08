@@ -16,7 +16,7 @@ model_config:
 
 
 infer_config:
-  unet_path: ckpts/diffusion_pytorch_model.bin
-  model_path: ckpts/instant_mesh_base.ckpt
+  unet_path: models/diffusion_pytorch_model.bin
+  model_path: models/instant_mesh_base.ckpt
   texture_resolution: 1024
   render_resolution: 512

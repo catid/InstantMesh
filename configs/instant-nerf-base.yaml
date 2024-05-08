@@ -14,8 +14,8 @@ model_config:
 
 
 infer_config:
-  unet_path: ckpts/diffusion_pytorch_model.bin
-  model_path: ckpts/instant_nerf_base.ckpt
+  unet_path: models/diffusion_pytorch_model.bin
+  model_path: models/instant_nerf_base.ckpt
   mesh_threshold: 10.0
   mesh_resolution: 256
   render_resolution: 384
