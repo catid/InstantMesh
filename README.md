@@ -23,6 +23,7 @@ https://github.com/TencentARC/InstantMesh/assets/20635237/dab3511e-e7c6-4c0b-bab
 - [x] Release model weights.
 - [x] Release huggingface gradio demo. Please try it at [demo](https://huggingface.co/spaces/TencentARC/InstantMesh) link.
 - [x] Add support to low-memory GPU environment.
+- [x] Add support for a CURL API to generate meshes from an image.
 - [ ] Add support to more multi-view diffusion models.
 
 # ⚙️ Dependencies and Installation
@@ -105,6 +106,16 @@ python train.py --base configs/instant-nerf-large-train.yaml --gpus 0,1,2,3,4,5,
 
 # Training on Mesh representation
 python train.py --base configs/instant-mesh-large-train.yaml --gpus 0,1,2,3,4,5,6,7 --num_nodes 1
+```
+
+# CURL API
+
+We provide a CURL API to generate meshes from an image.
+
+```bash
+python curl_frontend.py --auth-token YOUR_AUTH_TOKEN --port 8112
+
+curl -X POST -F "image=@examples/hatsune_miku.png" -H "Authorization: YOUR_AUTH_TOKEN" http://localhost:8112 --output results.zip
 ```
 
 # :books: Citation
