@@ -124,6 +124,22 @@ class RequestHandler(BaseHTTPRequestHandler):
 
         mesh = trimesh.load(mesh_path_idx)
 
+        rotation_x = np.radians(-90)
+        rotation_matrix = trimesh.transformations.rotation_matrix(
+            angle=rotation_x,
+            direction=[1, 0, 0],
+            point=[0, 0, 0]
+        )
+        mesh.apply_transform(rotation_matrix)
+
+        rotation_y = np.radians(-45)
+        rotation_matrix = trimesh.transformations.rotation_matrix(
+            angle=rotation_y,
+            direction=[0, 1, 0],
+            point=[0, 0, 0]
+        )
+        mesh.apply_transform(rotation_matrix)
+
         glb_path = os.path.join(mesh_path, f'{name}.glb')
         mesh.export(glb_path)
 
