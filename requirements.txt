@@ -18,3 +18,4 @@ xatlas
 plyfile
 git+https://github.com/NVlabs/nvdiffrast/
 trimesh
+requests

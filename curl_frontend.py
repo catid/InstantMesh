@@ -16,6 +16,7 @@ import os
 import rembg
 from torchvision.transforms import v2
 import trimesh
+import requests
 
 from src.utils.train_util import instantiate_from_config
 from src.utils.camera_util import get_zero123plus_input_cameras
@@ -54,13 +55,37 @@ class RequestHandler(BaseHTTPRequestHandler):
             environ={"REQUEST_METHOD": "POST"}
         )
 
-        image_file = form["image"].file
+        if "image" in form:
+            image_file = form["image"].file
 
-        with tempfile.NamedTemporaryFile(delete=False) as temp_file:
-            temp_file.write(image_file.read())
-            temp_file_path = temp_file.name
-        
-        image_file = temp_file_path
+            with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                temp_file.write(image_file.read())
+                temp_file_path = temp_file.name
+            
+            image_file = temp_file_path
+        elif "image_url" in form:
+            image_url = form["image_url"].value
+            # Download the image from the URL
+            response = requests.get(image_url)
+            if response.status_code == 200:
+                image_file = io.BytesIO(response.content)
+
+                with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                    temp_file.write(image_file.read())
+                    temp_file_path = temp_file.name
+
+                image_file = temp_file_path
+
+            else:
+                logging.warning(f"Failed to download image from {image_url}")
+                self.send_response(400)
+                self.end_headers()
+                return
+        else:
+            logging.warning("No image or from_url field found in the request")
+            self.send_response(400)
+            self.end_headers()
+            return
 
         ###############################################################################
         # Stage 1: Multiview generation.
