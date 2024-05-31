@@ -55,6 +55,8 @@ class RequestHandler(BaseHTTPRequestHandler):
             environ={"REQUEST_METHOD": "POST"}
         )
 
+        image_files = None
+
         if "image" in form:
             image_file = form["image"].file
 
@@ -63,6 +65,33 @@ class RequestHandler(BaseHTTPRequestHandler):
                 temp_file_path = temp_file.name
             
             image_file = temp_file_path
+        elif "multi_image_urls" in form:
+            multi_image_urls = form["multi_image_urls"].value
+            urls = multi_image_urls.split(',')
+            processed_images = []
+
+            for image_url in urls:
+                response = requests.get(image_url)
+                if response.status_code == 200:
+                    image_file = io.BytesIO(response.content)
+
+                    with tempfile.NamedTemporaryFile(delete=False) as temp_file:
+                        temp_file.write(image_file.read())
+                        temp_file_path = temp_file.name
+
+                    image = Image.open(temp_file_path).convert('RGB')
+                    image_np = np.asarray(image, dtype=np.float32) / 255.0
+                    image_tensor = torch.from_numpy(image_np).permute(2, 0, 1).contiguous().float()
+
+                    processed_images.append(image_tensor)
+                else:
+                    logging.warning(f"Failed to download image from {image_url}")
+                    self.send_response(400)
+                    self.end_headers()
+                    return
+
+            processed_images = torch.stack(processed_images)
+
         elif "image_url" in form:
             image_url = form["image_url"].value
             # Download the image from the URL
@@ -87,33 +116,38 @@ class RequestHandler(BaseHTTPRequestHandler):
             self.end_headers()
             return
 
-        ###############################################################################
-        # Stage 1: Multiview generation.
-        ###############################################################################
+        if processed_images is None:
 
-        rembg_session = None if args.no_rembg else rembg.new_session()
+            ###############################################################################
+            # Stage 1: Multiview generation.
+            ###############################################################################
 
-        name = os.path.basename(image_file).split('.')[0]
-        print(f'Imagining {name} ...')
+            rembg_session = None if args.no_rembg else rembg.new_session()
 
-        # remove background optionally
-        input_image = Image.open(image_file)
-        if not args.no_rembg:
-            input_image = remove_background(input_image, rembg_session)
-            input_image = resize_foreground(input_image, 0.85)
-        
-        # sampling
-        output_image = pipeline(
-            input_image, 
-            num_inference_steps=args.diffusion_steps, 
-        ).images[0]
+            name = os.path.basename(image_file).split('.')[0]
+            print(f'Imagining {name} ...')
 
-        output_image.save(os.path.join(image_path, f'{name}.png'))
-        print(f"Image saved to {os.path.join(image_path, f'{name}.png')}")
+            # remove background optionally
+            input_image = Image.open(image_file)
+            if not args.no_rembg:
+                input_image = remove_background(input_image, rembg_session)
+                input_image = resize_foreground(input_image, 0.85)
+            
+            # sampling
+            output_image = pipeline(
+                input_image, 
+                num_inference_steps=args.diffusion_steps, 
+            ).images[0]
 
-        images = np.asarray(output_image, dtype=np.float32) / 255.0
-        images = torch.from_numpy(images).permute(2, 0, 1).contiguous().float()     # (3, 960, 640)
-        images = rearrange(images, 'c (n h) (m w) -> (n m) c h w', n=3, m=2)        # (6, 3, 320, 320)
+            output_image.save(os.path.join(image_path, f'{name}.png'))
+            print(f"Image saved to {os.path.join(image_path, f'{name}.png')}")
+
+            images = np.asarray(output_image, dtype=np.float32) / 255.0
+            images = torch.from_numpy(images).permute(2, 0, 1).contiguous().float()     # (3, 960, 640)
+            images = rearrange(images, 'c (n h) (m w) -> (n m) c h w', n=3, m=2)        # (6, 3, 320, 320)
+        else:
+            images = rearrange(processed_images, '(b n m) c h w -> (n m b) c h w', n=3, m=2)  # Rearrange to (6, 3, 320, 320)
+            name = "multi-images"
 
         input_cameras = get_zero123plus_input_cameras(batch_size=1, radius=4.0*args.scale).to(device1)
         chunk_size = 20 if IS_FLEXICUBES else 1
