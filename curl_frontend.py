@@ -55,7 +55,7 @@ class RequestHandler(BaseHTTPRequestHandler):
             environ={"REQUEST_METHOD": "POST"}
         )
 
-        image_files = None
+        processed_images = None
 
         if "image" in form:
             image_file = form["image"].file
